@@ -1,1 +1,12 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap');
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  font-family: 'Outfit', sans-serif;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
