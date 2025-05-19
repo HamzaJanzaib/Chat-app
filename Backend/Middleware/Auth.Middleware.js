@@ -3,7 +3,7 @@ import User from './../Models/User.Model.js';
 
 // Auth Middleware
 export const proctedRoute = async (req, res, next) => {
-    const token = req.cookies.token;
+    const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
         return res.status(401).json({
             success: false,

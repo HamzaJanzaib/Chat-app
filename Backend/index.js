@@ -1,16 +1,16 @@
-import dotenv from "dotenv"
-dotenv.config()
-import app from "./app.js"
-import http from "http"
-import { Server } from "socket.io"
+import dotenv from "dotenv";
+dotenv.config();
+import app from "./app.js";
+import http from "http";
+import { Server } from "socket.io";
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000;
 
 const server = http.createServer(app);
 
 export const io = new Server(server, {
     cors: {
-        origin: "*",
+        origin: ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5173'],
     },
 });
 

@@ -25,7 +25,6 @@ const userSchema = new mongoose.Schema({
     bio: {
         type: String,
         required: false,
-        minlength: 10,
     },
 }, { timestamps: true });
 

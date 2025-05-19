@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import assets from './../../public/index';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../../Context/AuthContext';
 
 const Auth = () => {
   const [currentForm, setCurrentForm] = useState('Register');
@@ -11,25 +12,25 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isDataSubmited, setIsDataSubmited] = useState(false)
 
+  const { Auth } = useContext(AuthContext);
+
   const onSubmitHandler = (e) => {
     e.preventDefault();
 
+    setIsDataSubmited(true);
     if (currentForm === "Register" && !isDataSubmited) {
       if (!fullName || !email || !password) {
-        return ;
+        return;
       }
-      setIsLoading(false)
-      setIsDataSubmited(true);
     } else {
       if (!email || !password) {
         return;
       }
     }
 
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
+    Auth(currentForm, { fullName, email, password, bio });
+    setIsLoading(false);
+
   }
 
   return (
@@ -103,12 +104,12 @@ const Auth = () => {
         </button>
 
         <div>
-              <p>{currentForm === "Register" ? "Already have an account?" : "Don't have an account?"} <span className='text-violet-500 ml-1 cursor-pointer' onClick={() => {
-                setCurrentForm(currentForm === "Register" ? "Login" : "Register");
-                setIsDataSubmited(false);
-              }
-              }>{currentForm === "Register" ? "Login" : "Register"}</span></p>
-            </div>
+          <p>{currentForm === "Register" ? "Already have an account?" : "Don't have an account?"} <span className='text-violet-500 ml-1 cursor-pointer' onClick={() => {
+            setCurrentForm(currentForm === "Register" ? "Login" : "Register");
+            setIsDataSubmited(false);
+          }
+          }>{currentForm === "Register" ? "Login" : "Register"}</span></p>
+        </div>
       </form >
 
     </div >
