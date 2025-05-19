@@ -1,7 +1,9 @@
 import express from 'express';
 import Cors from 'cors';
-import connectDB from "./ConnectDB.js";
-
+import connectDB from './lib/ConnectDB.js';
+import cookieParser from 'cookie-parser';
+import UserRoute from './Routes/User.Route.js';
+import MessageRoute from './Routes/Message.Route.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -19,5 +21,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ limit: "4mb", extended: true }));
 app.use(Cors());
+app.use(cookieParser());
+
+app.use('/api/auth', UserRoute);
+app.use('/api/message', MessageRoute);
 
 export default app
