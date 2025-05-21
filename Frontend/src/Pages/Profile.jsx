@@ -1,34 +1,60 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import assets from './../../public/index';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../Context/AuthContext';
 
 const Profile = () => {
+  const { authUser, UpdateProfile, token } = useContext(AuthContext);
 
-  const [slectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
   const navigate = useNavigate();
-  const [name, setName] = useState("Hamza Janzaib")
-  const [bio, setBio] = useState('Hi Everyone, I am Using QuickChat')
+  const [name, setName] = useState(authUser?.fullName)
+  const [bio, setBio] = useState(authUser?.bio)
 
-  const handleSubmit = async (e)=>{
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/');
+
+    try {
+      if (!selectedImage) {
+        await UpdateProfile({ fullName: name, bio });
+        navigate("/")
+        return;
+      }
+
+      const render = new FileReader();
+      render.readAsDataURL(selectedImage);
+      render.onload = async () => {
+        const base64String = render.result.split(',')[1];
+        const data = {
+          profilePic: base64String,
+          fullName: name,
+          bio
+        }
+        await UpdateProfile(data, token);
+        navigate("/")
+        return;
+      };
+    } catch (error) {
+      console.error("Error updating profile:", error);
+
+    }
   }
 
-  return (
+  return authUser && (
     <div className='min-h-screen bg-cover bg-no-repeat flex items-center justify-center'>
 
       <div className='backdrop-blur-xl text-gray-300  w-5/6 max-w-2xl  border-2 border-gray-600  rounded-lg flex items-center justify-between max-sm:flex-col-reverse '>
 
         <form
-        onSubmit={handleSubmit}
-        className='flex-1 flex flex-col gap-5 p-10' >
+          onSubmit={handleSubmit}
+          className='flex-1 flex flex-col gap-5 p-10' >
           <h3 className='text-lg'>
             Profile Details
           </h3>
 
           <label htmlFor="avtar" className='flex items-center cursor-pointer gap-2'>
             <input onChange={(e) => setSelectedImage(e.target.files[0])} type="file" id='avtar' hidden accept='image/png, image/jpeg' />
-            <img src={slectedImage ? URL.createObjectURL(slectedImage) : assets.avatar_icon} alt="Edit Profile Image" className={`w-12 h-12 ${slectedImage && "rounded-full"}`} />
+            <img src={selectedImage ? URL.createObjectURL(selectedImage) : assets.avatar_icon} alt="Edit Profile Image" className={`w-12 h-12 ${selectedImage && "rounded-full"}`} />
             <p className='text-sm'>Change Avatar</p>
           </label>
 
@@ -42,7 +68,7 @@ const Profile = () => {
         </form>
 
         <div>
-          <img src={assets.logo_icon} alt="profile logo" className='max-w-44 aspect-square rounded-full mx-10 max-sm:mt-10' />
+          <img src={authUser?.profilePic} alt="profile logo" className='max-w-44 aspect-square rounded-full mx-10 max-sm:mt-10' />
         </div>
       </div>
 

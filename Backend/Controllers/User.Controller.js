@@ -1,7 +1,7 @@
-
 import { hashedPassword, comparePassword, createToken } from '../Utils/Index.js';
 import User from './../Models/User.Model.js';
 import cloudinary from './../lib/Cloudinary.js';
+import fs from 'fs';
 
 //Register New User
 export const registerUser = async (req, res) => {
@@ -103,34 +103,30 @@ export const checkAuth = async (req, res) => {
 
 // update user profile Details
 export const updateUser = async (req, res) => {
-    try {
-        const { fullName, bio, profilePic } = req.body;
+  try {
+    const { fullName, bio } = req.body;
+    const UserId = req.user._id;
+    let updateData = { fullName, bio };
+    console.log(req.file);
 
-        const UserId = req.user._id;
-
-        let UpdateUser;
-
-        if (!profilePic) {
-            UpdateUser = await User.FindByIdAndUpdate(UserId, {  bio, fullName }, { new: true });
-        } else {
-            const Upload = cloudinary.uploader.upload(profilePic);
-
-            UpdateUser = await User.FindByIdAndUpdate(
-                UserId,
-                { profilePic: Upload.secure_url, bio, fullName },
-                { new: true }
-            );
-        }
-
-        res.status(200).json({
-            success: true,
-            message: 'User updated successfully',
-            UserData: UpdateUser,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        });
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'profile_pics'
+      });
+      updateData.profilePic = result.secure_url;
+      fs.unlinkSync(req.file.path);
     }
+
+    const UpdateUser = await User.findByIdAndUpdate(UserId, updateData, { new: true });
+    res.status(200).json({
+      success: true,
+      message: 'User updated successfully',
+      UserData: UpdateUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };

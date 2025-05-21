@@ -17,19 +17,12 @@ const Auth = () => {
   const onSubmitHandler = (e) => {
     e.preventDefault();
 
-    setIsDataSubmited(true);
     if (currentForm === "Register" && !isDataSubmited) {
-      if (!fullName || !email || !password) {
-        return;
-      }
-    } else {
-      if (!email || !password) {
-        return;
-      }
+      setIsDataSubmited(true);
+      return;
     }
-
-    Auth(currentForm, { fullName, email, password, bio });
     setIsLoading(false);
+    Auth(currentForm, { fullName, email, password, bio })
 
   }
 
